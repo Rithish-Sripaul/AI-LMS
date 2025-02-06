@@ -1,0 +1,144 @@
+Methods
+
+Methods are functions that belong to a class. They can be used to perform operations on objects.
+
+Example:
+
+class Dog:
+    species = "Canine"
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    def bark(self):
+        print("Woof!")
+
+Creating an Object
+
+Here's how you create a new object from the class above:
+
+
+
+Explanation: 
+
+Dog(name="Buddy", age=3) creates a new Dog object named Buddy with age 3.
+
+
+
+Accessing Class Attributes and Methods
+
+You can access class attributes using dot notation:
+
+class Dog:
+    species = "Canine"
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    def bark(self):
+        print("Woof!")
+
+dog = Dog(name="Buddy", age=3)
+print(dog.species)  # Output: Canine
+
+You can also access class methods using dot notation:
+
+class Dog:
+    species = "Canine"
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    def bark(self):
+        print("Woof!")
+
+dog = Dog(name="Buddy", age=3)
+dog.bark()  # Output: Woof!
+
+
+
+Inheritance in Python
+
+Inheritance is a mechanism that allows one class to inherit the properties and behavior of another class. The child class inherits all the attributes and methods of the parent class and can also add new attributes or override existing ones.
+
+Example:
+
+
+
+Explanation:
+
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def eat(self):
+        print("Eating...")
+
+class Dog(Animal):  # Inheritance
+    def bark(self):
+        print("Woof!")
+
+dog = Dog("Buddy")
+dog.eat()  # Output: Eating...
+dog.bark()   # Output: Woof!
+
+
+
+Encapsulation in Python
+
+Encapsulation is the concept of bundling data and methods that operate on that data within a single unit, making it harder for other parts of the program to access or modify the data directly.
+
+Example:
+
+
+
+Explanation:
+
+class BankAccount:
+    def __init__(self, balance=0):
+        self.__balance = balance  # Private attribute
+
+    def deposit(self, amount):
+        if amount > 0:
+            self.__balance += amount
+            print(f"Deposited ${amount}. New balance: ${self.__balance}")
+
+    def get_balance(self):
+        return self.__balance
+
+account = BankAccount(100)
+account.deposit(50)  # Output: Deposited $50. New balance: $150
+print(account.get_balance())  # Output: 150
+
+
+
+Polymorphism in Python
+
+Polymorphism is the ability of an object to take on multiple forms, depending on the context in which it's used.
+
+Example:
+
+
+
+Explanation:
+
+class Shape:
+    def area(self):
+        pass
+
+class Circle(Shape):  
+    def __init__(self, radius):
+        self.radius = radius
+
+    def area(self):
+        return 3.14 * (self.radius ** 2)
+
+class Rectangle(Shape):  
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def area(self):
+        return self.width * self.height
+
+shapes = [Circle(5), Rectangle(4, 6)]
+
+for shape in shapes:
+    print(shape.area())

@@ -1,0 +1,135 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Add Report Type {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<h1 class="fw-bold mb-3 mt-3">Enroll Students</h1>
+
+
+<!-- ADDING REPORT TYPES -->
+
+<div class="row">
+  <div class="col-md-6">
+    <!-- SUB REPORT TYPE -->
+    <form method="post">
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-body border-0 shadow mb-4">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <div>
+                  <label for="topic_id">Choose Subject</label>
+                  <select name="topic_id" class="form-select mb-0" id="gender" aria-label="Gender select example"
+                    required>
+                    <option selected disabled value="">Choose Subject</option>
+                    {% for topic in parentTopicList %}
+                    <option value="{{topic['_id']}}">{{topic['name']}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div>
+                  <label for="student">Select Student</label>
+                  <select name="student" class="form-select mb-0" id="gender" aria-label="Gender select example"
+                    required>
+                    <option selected disabled value="">Select Student</option>
+                    {% for user in nonAdminUsers %}
+                    <option value="{{user['_id']}}">{{user['username']}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mt-3">
+              <div>
+                <input class="btn btn-gray-800 mt-2 animate-up-2" name="sub-report-type-submit" type="submit"
+                  value="Upload"></input>
+              </div>
+              <div>
+                <input class="btn btn-outline-gray-800 mt-2 animate-up-2" type="reset" value="Reset"></input>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- TABLE FOR EXISTING REPORTING TYPES -->
+<div class="col-12">
+  <div class="row">
+    <div class="col-12">
+      <div class="card card-body border-0 shadow mb-4">
+        <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+
+          <div>
+            <h2 class="h4">Existing types</h2>
+          </div>
+          <div>
+            <div class="btn-group ms-2 ms-lg-3">
+              {% for number in list_number_of_documents_per_page %}
+              {% if number == number_of_documents_per_page %}
+              <a type="button" class="btn btn-sm btn-outline-gray-600 active"
+                href="{{ url_for('settings.reportType', docppag=number) }} ">{{number}}</a>
+              {% else %}
+              <a type="button" class="btn btn-sm btn-outline-gray-600"
+                href="{{ url_for('settings.reportType', docppag=number) }} ">{{number}}</a>
+              {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+
+          <table class="table align-middle table-hover">
+            <thead>
+              <tr>
+                <th class="col">#</th>
+                <th class="col">Subject</th>
+                <th class="col">Enrolled Students</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ele in topicStudentList %}
+              <tr>
+                <td>{{loop.index}}</td>
+                <td>{{ele['name']}}</td>
+                <td>
+                  {% for student in ele["student_details"] %}
+                  {{student['username']}},
+                  {% endfor %}
+                </td>
+
+              </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+        </div>
+        <div
+          class="card-footer px-3 border-0 d-flex flex-column flex-lg-row align-items-center justify-content-between">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination mb-0">
+
+            </ul>
+          </nav>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script src="{{ url_for('static', filename='assets/js/toastScript.js') }}"></script>
+{% endblock javascripts %}

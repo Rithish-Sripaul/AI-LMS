@@ -1,0 +1,128 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Quiz - {{quiz_head["title"]}} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<!-- TOAST -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
+  <div id="liveToast" class="toast hide toastDel" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+        class="bi bi-exclamation-circle-fill text-danger" viewBox="0 0 16 16">
+        <path
+          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2">
+        </path>
+      </svg>
+
+      <strong class="me-auto ms-2">Alert</strong>
+      <small>Now</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      You have not spelled delete correctly. Please try again.
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Delete Document ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="post">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <div>
+                <label for="deleteConfirmInput">This process <b>CANNOT</b> be undone.</label>
+                <p>If you still want to delete the document, type 'delete' below.</p>
+                <input name="deleteConfirmInput" class="form-control" id="first_name" type="text"
+                  placeholder="Type 'delete' here" required>
+              </div>
+
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="deleteButton">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+</div>
+
+
+
+<div class="container">
+  <div class="row">
+    <!-- DOCUMENT DETAILS -->
+    <div class="col-12">
+      <div class="card card-body border-0 shadow mb-4">
+        <h2 class="display-4 mb-4">Quiz Details</h2>
+        <dl class="row">
+
+          <dt class="col-sm-3">Title</dt>
+          <dd class="col-sm-9 fw-bold">{{quiz_head["title"]}}</dd>
+
+          <dt class="col-sm-3">No. Of Questions</dt>
+          <dd class="col-sm-9">{{quiz_head["number_of_questions"]}}</dd>
+
+          <dt class="col-sm-3">Time Limit</dt>
+          <dd class="col-sm-9 fw-bold">{{quiz_head["time_limit"]}} minutes</dd>
+
+          <dt class="col-sm-3">Subject</dt>
+          <dd class="col-sm-9">{{subjectName}}</dd>
+
+          <dt class="col-sm-3">Type</dt>
+          <dd class="col-sm-9">{{quiz_head["type"]}}</dd>
+
+          {% if quiz_head["type"] == "lesson" %}
+          {% for l in quiz_head["lesson_names"] %}
+          <dt class="col-sm-3">Lesson {{loop.index}}</dt>
+          <dd class="col-sm-9">{{l}}</dd>
+          {% endfor %}
+          {% else %}
+          <dt class="col-sm-3">Topic</dt>
+          <dd class="col-sm-9">{{quiz_head["topic"]}}</dd>
+          {% endif %}
+
+
+          <dt class="col-sm-3 mt-4">Uploaded By</dt>
+          <dd class="col-sm-9 mt-4">{{uploadedBy}}, {{uploadedByEmail}}</dd>
+
+
+
+          <dt class="col-sm-3">Uploaded At</dt>
+          <dd class="col-sm-9">{{quiz_head["uploaded_at"].strftime("%d/%m/%Y, %H:%M:%S")}}</dd>
+
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="d-flex flex-row align-items-center justify-content-center">
+  <a class="btn btn-primary w-75 align-items-center" href="{{ url_for('quiz.attendQuiz', id=quiz_head['_id']) }}">Start
+    Quiz</a>
+</div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script src="{{ url_for('static', filename='assets/js/toastScript.js') }}"></script>
+
+{% endblock javascripts %}

@@ -1,0 +1,173 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} {{searchResults["title"]}} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<!-- TOAST -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
+    <div id="liveToast" class="toast hide toastDel" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-exclamation-circle-fill text-danger" viewBox="0 0 16 16">
+                <path
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2">
+                </path>
+            </svg>
+
+            <strong class="me-auto ms-2">Alert</strong>
+            <small>Now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            You have not spelled delete correctly. Please try again.
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Delete Document ?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="post">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div>
+                                <label for="deleteConfirmInput">This process <b>CANNOT</b> be undone.</label>
+                                <p>If you still want to delete the document, type 'delete' below.</p>
+                                <input name="deleteConfirmInput" class="form-control" id="first_name" type="text"
+                                    placeholder="Type 'delete' here" required>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="deleteButton">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+</div>
+
+
+
+
+<div class="row">
+    <!-- DOCUMENT DETAILS -->
+    <div class="col-12 col-xl-8">
+        <div class="card card-body border-0 shadow mb-4">
+            <h2 class="display-4 mb-4">Lesson Details</h2>
+            <dl class="row">
+
+                <dt class="col-sm-3">Title</dt>
+                <dd class="col-sm-9 fw-bold">{{searchResults["title"]}}</dd>
+
+                <dt class="col-sm-3">Uploaded By</dt>
+                <dd class="col-sm-9">{{uploadedBy}}, {{uploadedByEmail}}</dd>
+
+                <dt class="col-sm-3">Topic</dt>
+                <dd class="col-sm-9">{{searchResults["topic"]}}</dd>
+
+                <dt class="col-sm-3">Sub Topic</dt>
+                {% if searchResults["subTopic"] == None %}
+                <dd class="col-sm-9">-</dd>
+                {% else %}
+                <dd class="col-sm-9">{{searchResults["subTopic"]}}</dd>
+                {% endif %}
+
+
+                <dt class="col-sm-3">Uploaded At</dt>
+                <dd class="col-sm-9">{{searchResults["uploaded_at"].strftime("%d/%m/%Y, %H:%M:%S")}}</dd>
+
+            </dl>
+        </div>
+    </div>
+
+    <!-- DOWNLOAD & EDIT/DELETE -->
+    <div class="col-12 col-xl-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-body border-0 shadow mb-4 text-center align-items-center">
+                    <h2 class="display-4 mb-4">Download</h2>
+                    <div class="d-flex align-items-center">
+                        <div class="file-field">
+                            <div class="d-flex justify-content-xl-center ms-xl-3">
+                                <div class="d-flex">
+                                    <a class="btn animate-up-2"
+                                        href="{{url_for('documents.download', id=searchResults['file_id'])}}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+                                            fill="currentColor" class="bi bi-download" viewBox="0 0 20 20">
+                                            <path
+                                                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
+                                            <path
+                                                d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z" />
+                                        </svg>
+                                        <div class="d-md-block text-left">
+                                            <div class="fw-normal text-dark mb-1">Click here to download</div>
+                                        </div>
+                                    </a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SUMMARY -->
+<div class="row align-items-center">
+    <div class="col-12 col-xl-8">
+        <div class="card card-body border-0 shadow mb-4">
+            <h4 class="card-title">Summary</h4>
+            <!-- <h6 class="card-subtitle text-muted mb-4">Approved AI Generated Content</h6> -->
+            <p class="card-content">{{searchResults["summaryHTML"] | safe}}</p>
+        </div>
+    </div>
+    <!-- <div class="col-12 col-xl-4">
+        <div class="card card-body border-0 shadow mb-4">
+            <p class="dispplay-4">Edit</p>
+        </div>
+    </div> -->
+</div>
+
+<div class="row align-items-center">
+    <div class="col-12 col-xl-8">
+        <div class="card card-body border-0 shadow mb-4">
+            <h4 class="card-title">Examples</h4>
+            <!-- <h6 class="card-subtitle text-muted mb-4">Approved AI Generated Content</h6> -->
+            <p class="card-content">{{searchResults["examplesHTML"] | safe}}</p>
+        </div>
+    </div>
+    <!-- <div class="col-12 col-xl-4">
+        <div class="card card-body border-0 shadow mb-4">
+            <p class="dispplay-4">Edit</p>
+        </div>
+    </div> -->
+</div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script src="{{ url_for('static', filename='assets/js/toastScript.js') }}"></script>
+
+{% endblock javascripts %}

@@ -1,0 +1,125 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Search History {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<h1 class="fw-bold mb-3 mt-3">Pending Quizzes</h1>
+
+
+<!-- ADDING REPORT TYPES -->
+
+<!-- TABLE FOR EXISTING REPORTING TYPES -->
+<div class="col-12">
+  <div class="row">
+    <div class="col-12">
+      <div class="card card-body border-0 shadow mb-4">
+        <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+
+          <div>
+            <h2 class="h4 mb-4"></h2>
+          </div>
+          <div>
+            <!-- PAGINATION -->
+          </div>
+        </div>
+        <div class="table-responsive">
+
+          <table class="table align-middle table-hover">
+            <thead>
+              <tr>
+                <th class="col">#</th>
+                <th class="col">Uploaded At</th>
+                <th class="col">Title</th>
+                <th class="col">Type</th>
+                <th class="col"># of Questions</th>
+                <th class="col">Time Limit</th>
+                <th class="col">Continue</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for quiz in quizzes %}
+              <tr>
+                <td>{{loop.index}}</td>
+                <td>{{quiz["uploaded_at"].strftime("%d/%m/%Y, %H:%M:%S")}}</td>
+                <td>{{quiz["quiz_title"]}}</td>
+                <td>{{quiz["type"]}}</td>
+                <td>{{quiz["number_of_questions"]}}</td>
+                <td>{{quiz["time_limit"]}} minutes</td>
+                <td><a href="{{ url_for('quiz.intermediateQuizDetails', id=quiz['quiz_id']) }}">-></a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div
+          class="card-footer px-3 border-0 d-flex flex-column flex-lg-row align-items-center justify-content-between">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination mb-0">
+
+            </ul>
+          </nav>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h1 class="fw-bold mb-3 mt-3">Pending Assessments</h1>
+<div class="col-12">
+  <div class="row">
+    <div class="col-12">
+      <div class="card card-body border-0 shadow mb-4">
+        <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+
+          <div>
+            <h2 class="h4 mb-4"></h2>
+          </div>
+          <div>
+            <!-- PAGINATION -->
+          </div>
+        </div>
+        <div class="table-responsive">
+
+          <table class="table align-middle table-hover">
+            <thead>
+              <tr>
+                <th class="col">#</th>
+                <th class="col">Uploaded At</th>
+                <th class="col">Title</th>
+                <th class="col">Continue</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for assessment in assessments %}
+              <tr>
+                <td>{{loop.index}}</td>
+                <td>{{assessment["uploaded_at"].strftime("%d/%m/%Y, %H:%M:%S")}}</td>
+                <td>{{assessment["assessment_title"]}}</td>
+                <td><a href="{{ url_for('assessment.assessmentDetails', id=assessment['assessment_id']) }}">-></a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div
+          class="card-footer px-3 border-0 d-flex flex-column flex-lg-row align-items-center justify-content-between">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination mb-0">
+
+            </ul>
+          </nav>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

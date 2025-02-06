@@ -1,0 +1,15 @@
+click
+Flask==2.0.3
+Flask_Login
+flask_wtf
+Jinja2
+pymongo
+pypdf
+Requests
+Werkzeug==2.0.3
+WTForms
+tesseract
+waitress
+flask-pymongo
+ocrmypdf
+ghostscript

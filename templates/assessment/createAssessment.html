@@ -1,0 +1,316 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Upload {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+{% block body %}{% endblock %}
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+  data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="d-flex flex-column align-items-center justify-content-between">
+          <div class="text-center mb-3">
+            <h3>Generating assessment</h3>
+            <h3>Please wait</h3>
+          </div>
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h1 class="fw-bold mb-1 mt-2">Create new assessment</h1>
+<form method="post" enctype="multipart/form-data" id="uploadForm">
+  <div class="row">
+    <div class="col-12 col-xl-8">
+      <div class="card card-body border-0 shadow mb-4">
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <div>
+              <label for="assessment_title">Assessment Title</label>
+              <input name="assessment_title" class="form-control" id="first_name" type="text"
+                placeholder="Enter assessment title" required>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <div>
+              <label for="assessment_details">Prompt / Assessment Details</label>
+              <input name="assessment_details" class="form-control" id="first_name" type="text"
+                placeholder="Enter prompt" required>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div>
+              <label for="subject">Subject</label>
+              <select name="subject" class="form-select mb-0" aria-label="Gender select example">
+                <option selected disabled value="">Select Type</option>
+                {% for topic in parentTopicList %}
+                <option value="{{topic['_id']}}">{{topic['name']}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div>
+              <label for="content_from">Content From?</label>
+              <div class="input-group mt-2">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input content_from" type="radio" name="content_from" value="1"
+                    onchange="lessonTopicSwitch()" required>
+                  <label class="form-check-label" for="content_from">
+                    Lessons
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input content_from" type="radio" name="content_from" value="0"
+                    onchange="lessonTopicSwitch()" required>
+                  <label class="form-check-label" for="content_from">
+                    Topics
+                  </label>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="row" id="lessonTopicContainer">
+
+        </div>
+        <div class="d-flex flex-row justify-content-between mt-3">
+          <div>
+            <input class="btn btn-gray-800 mt-2 animate-up-2" type="submit" value="Upload" id="uploadButton"></input>
+          </div>
+          <div class="d-flex flex-row gap-3" id="addLessonBtnContainer">
+            <div>
+              <button class="btn btn-gray-800 mt-2 animate-up-2" type="button" id="addLessonBtn" disabled=true>Add
+                Lesson</button>
+            </div>
+            <div>
+              <input class="btn btn-outline-gray-800 mt-2 animate-up-2" type="reset" value="Reset"
+                onclick="resetForm()"></input>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- UPLOAD DOCUMENTS -->
+  </div>
+</form>
+
+<!-- RECENT UPLOADS TABLE -->
+<div class="row mb-2">
+  <div class="col-12">
+    <div class="card card-body border-0 shadow">
+      <div class="d-flex flex-row justify-content-between align-items-center mb-4">
+        <div>
+          <h4 class="card-title">Recent Quizes</h4>
+          <h6 class="card-subtitle text-muted"></h6>
+        </div>
+        <div>
+          <div class="btn-group ms-2 ms-lg-3">
+            <!-- PAGINATION -->
+          </div>
+        </div>
+      </div>
+
+
+      <div class="table-responsive">
+
+        <table class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th class="border-gray-200">#</th>
+              <th class="border-gray-200">Upload Date</th>
+              <th class="border-gray-200">Title</th>
+              <th class="border-gray-200">Subject</th>
+              <th class="border-gray-200">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for assessment in assessments %}
+            <tr>
+              <td>{{loop.index}}</td>
+              <td>{{assessment['uploaded_at']}}</td>
+              <td>{{assessment['title']}}</td>
+              <td>{{subject}}</td>
+              <td><a href="{{ url_for('assessment.assessmentDetails', id=assessment['_id']) }}">-></a></td>
+            </tr>
+            {% endfor %}
+
+          </tbody>
+        </table>
+
+        <div
+          class="card-footer px-3 border-0 d-flex flex-column flex-lg-row align-items-center justify-content-between">
+          <nav aria-label="Page navigation example">
+            <!-- PAGINATION -->
+          </nav>
+          <!-- PAGINATION -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script>
+  async function fetchData() {
+    console.log("We're in")
+    const response = await fetch("/upload/getReportTypes");
+    const data = await response.json();
+    return data;
+  }
+
+  async function displaySubReportType() {
+    let reportTypeContainer = document.getElementById("lessonTopicContainer");
+    let reportType = document.getElementById("topic");
+    let reportTypeID = reportType.options[reportType.selectedIndex].value;
+    let reportTypeList = await fetchData();
+
+    let subReportTypeContainer = `
+                    <div class="col-md-6 mb-3" id="subReportTypeContainer">
+                        <label for="sub_topic">Sub Topic</label>
+                        <select name="sub_topic" class="form-select mb-0" id="subReportTypeSelect"
+                            aria-label="Gender select example">
+                            <option selected value="" id="defaultSelectOption">Type</option>
+                        </select>
+                    </div>`;
+
+
+    // Checking if the selected report type has sub report types
+    let hasSubReportType = reportTypeList.find((item) => item["_id"].$oid === reportTypeID)?.hasSubTopic;
+
+    if (hasSubReportType) {
+      if (document.getElementById("subReportTypeContainer") === null) {
+        reportTypeContainer.insertAdjacentHTML('beforeend', subReportTypeContainer);
+
+        let subReportTypeSelect = document.getElementById("subReportTypeSelect");
+
+        // Populating the select field with Sub Reports
+        for (let i in reportTypeList) {
+          console.log("IN")
+          console.log()
+          if (reportTypeList[i].parentTopic?.$oid == reportTypeID) {
+            subReportTypeSelect.insertAdjacentHTML('beforeend', `<option value="${reportTypeList[i]._id.$oid}">${reportTypeList[i].name}</option>`);
+          }
+        }
+      } else {
+        // Removing all child nodes exept the default one
+        while (subReportTypeSelect.lastChild.id != "defaultSelectOption") {
+          subReportTypeSelect.removeChild(subReportTypeSelect.lastChild);
+        }
+
+        // Populating the select field with Sub Reports
+        for (let i in reportTypeList) {
+          console.log("IN")
+          console.log()
+          if (reportTypeList[i].parentTopic?.$oid == reportTypeID) {
+            subReportTypeSelect.insertAdjacentHTML('beforeend', `<option value="${reportTypeList[i]._id.$oid}">${reportTypeList[i].name}</option>`);
+          }
+        }
+      }
+    } else {
+      // Removing the sub report type container if it exists
+      if (document.getElementById("subReportTypeContainer") !== null) {
+        document.getElementById("subReportTypeContainer").remove();
+      }
+    }
+
+  }
+  // Switch between lessons and topics
+  function lessonTopicSwitch() {
+    let lessonTopicContainer = document.getElementById("lessonTopicContainer");
+    let contentFrom = document.querySelector('input[name="content_from"]:checked').value;
+    if (contentFrom == 1) {
+      lessonTopicContainer.innerHTML = `
+      <div class="col-md-6 mb-3">
+            <div>
+              <label for="document_id[]">Select Lesson</label>
+              <select name="document_id[]" class="form-select mb-0" id="document_id" aria-label="Gender select example">
+                <option selected disabled value="">Select Lesson</option>
+                {% for document in documentsList %}
+                <option value="{{document['_id']}}">{{document['title']}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+      `
+      document.querySelector("#addLessonBtn").disabled = false;
+    } else {
+      lessonTopicContainer.innerHTML = `
+      <div class="col-md-6 mb-3">
+                        <div>
+                            <label for="topic">Topic</label>
+                            <select name="topic" class="form-select mb-0" id="topic" aria-label="Gender select example"
+                                onchange="displaySubReportType()">
+                                <option selected disabled value="">Select Type</option>
+                                {% for topic in parentTopicList %}
+                                <option value="{{topic['_id']}}">{{topic['name']}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+      `
+      document.querySelector("#addLessonBtn").disabled = true;
+    }
+  }
+
+  // New lesson dropdown creation
+  let addLessonBtn = document.getElementById("addLessonBtn");
+  let lessonCount = 2;
+
+  addLessonBtn.addEventListener("click", addLesson);
+
+  function addLesson() {
+    const lessonContainer = document.getElementById("lessonTopicContainer");
+    const newLesson = `
+          <div class="col-md-6 mb-3">
+            <div>
+              <label for="document_id[]">Select Lesson ${lessonCount} </label>
+              <select name="document_id[]" class="form-select mb-0" id="document_id" aria-label="Gender select example">
+                <option selected disabled value="">Select Lesson ${lessonCount}</option>
+                {% for document in documentsList %}
+                <option value="{{document['_id']}}">{{document['title']}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+  `;
+    lessonContainer.insertAdjacentHTML("beforeend", newLesson);
+    lessonCount++;
+  }
+
+  // Modal for spinner
+  let uploadForm = document.getElementById("uploadForm");
+  var ocrModal = new bootstrap.Modal(document.getElementById("exampleModal"), {
+    keyboard: false,
+  });
+
+  uploadForm.addEventListener("submit", () => {
+    ocrModal.toggle();
+  });
+</script>
+<script src="{{ url_for('static', filename='assets/js/quizAdminHome.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/toastScript.js') }}"></script>
+{% endblock javascripts %}

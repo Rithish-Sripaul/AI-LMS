@@ -1,0 +1,149 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<!-- TOAST -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
+  <div id="liveToast" class="toast hide toastDel" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+        class="bi bi-exclamation-circle-fill text-danger" viewBox="0 0 16 16">
+        <path
+          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2">
+        </path>
+      </svg>
+
+      <strong class="me-auto ms-2">Alert</strong>
+      <small>Now</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      You have not spelled delete correctly. Please try again.
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Delete Document ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="post">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <div>
+                <label for="deleteConfirmInput">This process <b>CANNOT</b> be undone.</label>
+                <p>If you still want to delete the document, type 'delete' below.</p>
+                <input name="deleteConfirmInput" class="form-control" id="first_name" type="text"
+                  placeholder="Type 'delete' here" required>
+              </div>
+
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="deleteButton">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+</div>
+
+
+
+
+<div class="row">
+  <!-- DOCUMENT DETAILS -->
+  <div class="col-12 col-xl-8">
+    <div class="card card-body border-0 shadow mb-4">
+      <h2 class="display-4 mb-4">Assessment Details</h2>
+      <dl class="row">
+
+        <dt class="col-sm-3">Title</dt>
+        <dd class="col-sm-9 fw-bold">{{assessment["title"]}}</dd>
+
+        <dt class="col-sm-3">Description</dt>
+        <dd class="col-sm-9">{{assessment["question"]}}</dd>
+
+        {% for l in assessment["lesson_names"] %}
+        <dt class="col-sm-3">Lesson {{loop.index}}</dt>
+        <dd class="col-sm-9">{{l}}</dd>
+        {% endfor %}
+
+        <dt class="col-sm-3">Uploaded At</dt>
+        <dd class="col-sm-9">{{assessment["uploaded_at"].strftime("%d/%m/%Y, %H:%M:%S")}}</dd>
+      </dl>
+    </div>
+  </div>
+
+  <!-- UPLOAD DOCUMENTS -->
+  {% if session["isAdmin"] == False %}
+  <div class="col-12 col-xl-4">
+    <form action="post" class="">
+      <div class="row">
+        <div class="col-12 mb-4 scanDocument">
+          <div
+            class="card shadow border-0 text-center p-0 d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4"
+            id="file-name-card">
+            No document <br>uploaded
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="card card-body border-0 shadow mb-4">
+            <h2 class="h5 mb-4">Select document</h2>
+            <div class="d-flex align-items-center">
+              <div class="file-field">
+                <div class="d-flex justify-content-xl-center ms-xl-3">
+                  <div class="d-flex">
+                    <svg class="icon text-gray-500 me-2" fill="currentColor" viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd"
+                        d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
+                        clip-rule="evenodd"></path>
+                    </svg>
+                    <input type="file" class="formFile form-control file-uploader" name="assessmentDocument"
+                      onChange="upload();" id="uploadedFile" required>
+                    <div class="d-md-block text-left">
+                      <div class="fw-normal text-dark mb-1">Browse document</div>
+                      <div class="text-gray small">PDF or DOCX. Max size of 40MB</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex flex-row aligh-items-center justify-content-center">
+        <button class="btn btn-primary w-75 align-items-center" class="submit">
+          Submit PDF</button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+</div>
+</div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script src="{{ url_for('static', filename='assets/js/toastScript.js') }}"></script>
+
+{% endblock javascripts %}

@@ -1,0 +1,262 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Upload {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+{% block body %}{% endblock %}
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="d-flex flex-column align-items-center justify-content-between">
+                    <div class="text-center mb-3">
+                        <h3>Applying OCR layer to PDF</h3>
+                        <h3>Please wait</h3>
+                    </div>
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h1 class="fw-bold mb-1 mt-2">Upload</h1>
+<form method="post" enctype="multipart/form-data" id="uploadForm">
+    <div class="row">
+        <div class="col-12 col-xl-8">
+            <div class="card card-body border-0 shadow mb-4">
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div>
+                            <label for="document_title">Title</label>
+                            <input name="document_title" class="form-control" id="first_name" type="text"
+                                placeholder="Enter document title" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="reportTypeContainer">
+                    <div class="col-md-6 mb-3">
+                        <div>
+                            <label for="topic">Topic</label>
+                            <select name="topic" class="form-select mb-0" id="topic" aria-label="Gender select example"
+                                onchange="displaySubReportType()">
+                                <option selected disabled value="">Select Type</option>
+                                {% for topic in parentTopicList %}
+                                <option value="{{topic['_id']}}">{{topic['name']}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="true" id="flexCheckDefault"
+                                name="ocrValue">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Apply OCR on the PDF
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row justify-content-between mt-3">
+                    <div>
+                        <input class="btn btn-gray-800 mt-2 animate-up-2" type="submit" value="Upload"
+                            id="uploadButton"></input>
+                    </div>
+
+                    <div class="d-flex flex-row gap-3">
+                        <div>
+                            <input class="btn btn-outline-gray-800 mt-2 animate-up-2" type="reset" value="Reset"
+                                onclick="resetForm()"></input>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- UPLOAD DOCUMENTS -->
+        <div class="col-12 col-xl-4">
+            <div class="row">
+                <div class="col-12 mb-4 scanDocument">
+                    <div class="card shadow border-0 text-center p-0 d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4"
+                        id="file-name-card">
+                        No document <br>uploaded
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="card card-body border-0 shadow mb-4">
+                        <h2 class="h5 mb-4">Select document</h2>
+                        <div class="d-flex align-items-center">
+                            <div class="file-field">
+                                <div class="d-flex justify-content-xl-center ms-xl-3">
+                                    <div class="d-flex">
+                                        <svg class="icon text-gray-500 me-2" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        <input type="file" class="formFile form-control file-uploader" name="documents"
+                                            onChange="upload();" id="uploadedFile" required>
+                                        <div class="d-md-block text-left">
+                                            <div class="fw-normal text-dark mb-1">Browse document</div>
+                                            <div class="text-gray small">PDF or DOCX. Max size of 40MB</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- RECENT UPLOADS TABLE -->
+<div class="row mb-2">
+    <div class="col-12">
+        <div class="card card-body border-0 shadow">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="card-title">Recent Uploads</h4>
+                    <h6 class="card-subtitle text-muted"></h6>
+                </div>
+                <div>
+                    <div class="btn-group ms-2 ms-lg-3">
+                        <!-- PAGINATION -->
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="table-responsive">
+
+                <table class="table table-hover text-center">
+                    <thead>
+                        <tr>
+                            <th class="border-gray-200">#</th>
+                            <th class="border-gray-200">Upload Date</th>
+                            <th class="border-gray-200">Title</th>
+                            <th class="border-gray-200">Topic</th>
+                            <th class="border-gray-200">Sub Topic</th>
+                            <th class="border-gray-200">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in range(uploadedDocumentsLen) %}
+                        <tr>
+                            <td>{{ number_of_documents_per_page * current_page + i + 1 }}</td>
+                            <td>{{uploadedDocuments[i]['uploaded_at'].strftime("%d/%m/%Y, %H:%M:%S")}}</td>
+                            <td>{{uploadedDocuments[i]['title']}}</td>
+                            <td>{{uploadedDocuments[i]['topic']}}</td>
+                            <td>{{uploadedDocuments[i]['subTopic']}}</td>
+                            <td>
+                                <a href="{{url_for('documents.details', id=uploadedDocuments[i]['_id'])}}"><svg
+                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd"
+                                            d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8" />
+                                    </svg></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div
+                    class="card-footer px-3 border-0 d-flex flex-column flex-lg-row align-items-center justify-content-between">
+                    <nav aria-label="Page navigation example">
+                        <!-- PAGINATION -->
+                    </nav>
+                    <!-- PAGINATION -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script src="{{ url_for('static', filename='assets/js/uploadDocuments.js') }}"></script>
+<script>
+    async function fetchData() {
+        console.log("We're in")
+        const response = await fetch("/upload/getReportTypes");
+        const data = await response.json();
+        return data;
+    }
+
+    async function displaySubReportType() {
+        let reportTypeContainer = document.getElementById("reportTypeContainer");
+        let reportType = document.getElementById("topic");
+        let reportTypeID = reportType.options[reportType.selectedIndex].value;
+        let reportTypeList = await fetchData();
+
+        let subReportTypeContainer = `
+                    <div class="col-md-6 mb-3" id="subReportTypeContainer">
+                        <label for="sub_topic">Sub Topic</label>
+                        <select name="sub_topic" class="form-select mb-0" id="subReportTypeSelect"
+                            aria-label="Gender select example">
+                            <option selected value="" id="defaultSelectOption">Type</option>
+                        </select>
+                    </div>`;
+
+
+        // Checking if the selected report type has sub report types
+        let hasSubReportType = reportTypeList.find((item) => item["_id"].$oid === reportTypeID)?.hasSubTopic;
+
+        if (hasSubReportType) {
+            if (document.getElementById("subReportTypeContainer") === null) {
+                reportTypeContainer.insertAdjacentHTML('beforeend', subReportTypeContainer);
+
+                let subReportTypeSelect = document.getElementById("subReportTypeSelect");
+
+                // Populating the select field with Sub Reports
+                for (let i in reportTypeList) {
+                    console.log("IN")
+                    console.log()
+                    if (reportTypeList[i].parentTopic?.$oid == reportTypeID) {
+                        subReportTypeSelect.insertAdjacentHTML('beforeend', `<option value="${reportTypeList[i]._id.$oid}">${reportTypeList[i].name}</option>`);
+                    }
+                }
+            } else {
+                // Removing all child nodes exept the default one
+                while (subReportTypeSelect.lastChild.id != "defaultSelectOption") {
+                    subReportTypeSelect.removeChild(subReportTypeSelect.lastChild);
+                }
+
+                // Populating the select field with Sub Reports
+                for (let i in reportTypeList) {
+                    console.log("IN")
+                    console.log()
+                    if (reportTypeList[i].parentTopic?.$oid == reportTypeID) {
+                        subReportTypeSelect.insertAdjacentHTML('beforeend', `<option value="${reportTypeList[i]._id.$oid}">${reportTypeList[i].name}</option>`);
+                    }
+                }
+            }
+        } else {
+            // Removing the sub report type container if it exists
+            if (document.getElementById("subReportTypeContainer") !== null) {
+                document.getElementById("subReportTypeContainer").remove();
+            }
+        }
+
+    }
+</script>
+<script src="{{ url_for('static', filename='assets/js/toastScript.js') }}"></script>
+{% endblock javascripts %}
